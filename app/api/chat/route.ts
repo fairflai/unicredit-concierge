@@ -22,7 +22,7 @@ const SECRET_CODE = 'UNICREDIT2025'
 const ALLOWED_DOMAINS = [
   'localhost',
   '192.168.1.145',
-  'https://unicredit-concierge.vercel.app',
+  'unicredit-concierge.vercel.app',
 ]
 
 export async function POST(req: Request) {
