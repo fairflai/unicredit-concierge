@@ -18,13 +18,11 @@ function getDomainFromHeader(
   }
 }
 
-const SECRET_CODE = process.env.SECRET_CODE || 'GLITCH2025'
+const SECRET_CODE = 'UNICREDIT2025'
 const ALLOWED_DOMAINS = [
   'localhost',
   '192.168.1.145',
-  'fairflai-glitch.vercel.app',
-  'hacker-me-fairflai.vercel.app',
-  'glitch.fairflai.com',
+  'https://unicredit-concierge.vercel.app',
 ]
 
 export async function POST(req: Request) {
