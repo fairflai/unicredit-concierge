@@ -38,6 +38,14 @@ export default function ChatBot() {
 
   const { containerRef, endRef, scrollToBottom } = useScrollToBottom()
 
+  const [code, setCode] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setCode(new URLSearchParams(window.location.search).get('code'))
+    }
+  }, [])
+
   const {
     messages,
     input,
@@ -51,10 +59,7 @@ export default function ChatBot() {
     id,
     streamProtocol: 'data',
     body: {
-      code:
-        typeof window !== 'undefined'
-          ? new URLSearchParams(window.location.search).get('code')
-          : null,
+      code,
     },
   })
 
@@ -222,6 +227,7 @@ export default function ChatBot() {
                               ? 'markdown-content text-slate-800'
                               : 'whitespace-pre-wrap'
                           }
+                          suppressHydrationWarning
                         >
                           {message.parts.map((part, i) => {
                             switch (part.type) {
