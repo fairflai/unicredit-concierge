@@ -58,8 +58,42 @@ export default function ChatBot() {
     },
   })
 
+  const isAtBottomRef = useRef(true)
+
   useEffect(() => {
-    scrollToBottom('auto')
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        isAtBottomRef.current = entry.isIntersecting
+      },
+      {
+        root: null, // viewport
+        threshold: 0, // trigger as soon as even 1px is visible
+      }
+    )
+
+    if (endRef.current) {
+      observer.observe(endRef.current)
+    }
+
+    return () => {
+      observer.disconnect()
+    }
+  }, [endRef])
+
+  useEffect(() => {
+    const lastMessage = messages[messages.length - 1]
+
+    // Always scroll to bottom for user messages to confirm action
+    if (lastMessage?.role === 'user') {
+      scrollToBottom('auto')
+      return
+    }
+
+    // For assistant messages (streaming or complete), only scroll if we were already at the bottom
+    // This allows the user to scroll up and read history without being yanked back down
+    if (isAtBottomRef.current) {
+      scrollToBottom('auto')
+    }
   }, [messages, scrollToBottom])
 
   const updateTextareaHeight = () => {
@@ -152,7 +186,7 @@ export default function ChatBot() {
               </p>
             </div>
           ) : (
-            <div className="flex flex-col h-full">
+            <div className="flex flex-col h-full min-h-0">
               <div className="flex items-center justify-start px-6 py-4">
                 <Button
                   onClick={resetChat}
