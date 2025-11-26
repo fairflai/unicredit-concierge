@@ -10,6 +10,8 @@ export function checkRateLimit(
   limit: number,
   windowMs: number
 ): boolean {
+  console.log('[rate-limiter] Checking rate limit for:', identifier)
+
   const now = Date.now()
   const record = rateLimits.get(identifier)
 

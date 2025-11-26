@@ -3,11 +3,14 @@ import type { NextRequest } from 'next/server'
 import { checkRateLimit } from './lib/security/rate-limiter'
 
 export function middleware(request: NextRequest) {
-  const ip = request.headers.get('x-forwarded-for') || '127.0.0.1'
-  console.log(`Request from IP: ${ip}`)
+  // 1. Session-based Rate Limiting (20 req/min per session)
+  // Extract session ID from request headers
+  const sessionId = request.headers.get('x-session-id')
 
-  // 1. IP-based Rate Limiting (20 req/min)
-  const isAllowed = checkRateLimit(`ip:${ip}`, 20, 60000)
+  // Use session ID as rate limit identifier
+  // If no session (e.g., /api/auth endpoint), use a default identifier
+  const rateLimitId = sessionId ? `session:${sessionId}` : 'unauthenticated'
+  const isAllowed = checkRateLimit(rateLimitId, 20, 60000)
 
   if (!isAllowed) {
     return new NextResponse('Too Many Requests', {
