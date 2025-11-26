@@ -284,7 +284,10 @@ export default function ChatBot() {
       <section className="relative z-10 flex h-dvh w-full flex-col overflow-hidden bg-white text-slate-900">
         {error && (
           <div className="px-6 py-3 text-sm text-red-600 bg-red-100 border-b border-red-200">
-            ⚠️ Si è verificato un errore durante la comunicazione
+            {error.message?.includes('429') ||
+            error.message?.includes('Too Many Requests')
+              ? '⏱️ Troppi messaggi inviati. Riprova tra un minuto.'
+              : '⚠️ Si è verificato un errore durante la comunicazione'}
           </div>
         )}
 
