@@ -4,7 +4,8 @@ import { useChat } from '@ai-sdk/react'
 import { Button } from '@/components/ui/button'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Textarea } from '@/components/ui/textarea'
-import { ArrowUp, ArrowLeft } from 'lucide-react'
+import { Input } from '@/components/ui/input'
+import { ArrowUp, ArrowLeft, Lock } from 'lucide-react'
 import { useEffect, useRef, useMemo, useState } from 'react'
 import { useScrollToBottom } from '@/hooks/use-scroll-to-bottom'
 import MarkdownIt from 'markdown-it'
@@ -18,6 +19,13 @@ export default function ChatBot() {
   const id = 'chatbot'
   const [showSplashScreen, setShowSplashScreen] = useState(true)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
+
+  // Auth State
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const [sessionId, setSessionId] = useState<string | null>(null)
+  const [authError, setAuthError] = useState<string | null>(null)
+  const [accessCodeInput, setAccessCodeInput] = useState('')
+  const [isVerifying, setIsVerifying] = useState(true)
 
   const md = useMemo(() => {
     return new MarkdownIt({
@@ -38,13 +46,81 @@ export default function ChatBot() {
 
   const { containerRef, endRef, scrollToBottom } = useScrollToBottom()
 
-  const [code, setCode] = useState<string | null>(null)
-
+  // Authentication Logic
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      setCode(new URLSearchParams(window.location.search).get('code'))
+    const verifyCode = async (code: string) => {
+      try {
+        const res = await fetch('/api/auth', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ code }),
+        })
+
+        if (res.ok) {
+          const data = await res.json()
+          setSessionId(data.sessionId)
+          sessionStorage.setItem('chat_session_id', data.sessionId)
+          setIsAuthenticated(true)
+          // Keep URL for sharing
+          // window.history.replaceState({}, document.title, '/')
+        } else {
+          setAuthError('Codice non valido')
+        }
+      } catch {
+        setAuthError('Errore di connessione')
+      } finally {
+        setIsVerifying(false)
+      }
+    }
+
+    // Check URL code
+    const urlParams = new URLSearchParams(window.location.search)
+    const urlCode = urlParams.get('code')
+
+    // Check stored session
+    const storedSession = sessionStorage.getItem('chat_session_id')
+
+    if (urlCode) {
+      verifyCode(urlCode)
+    } else if (storedSession) {
+      setSessionId(storedSession)
+      setIsAuthenticated(true)
+      setIsVerifying(false)
+    } else {
+      setIsVerifying(false)
     }
   }, [])
+
+  const handleManualLogin = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setAuthError(null)
+    setIsVerifying(true)
+
+    try {
+      const res = await fetch('/api/auth', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code: accessCodeInput }),
+      })
+
+      if (res.ok) {
+        const data = await res.json()
+        setSessionId(data.sessionId)
+        sessionStorage.setItem('chat_session_id', data.sessionId)
+        setIsAuthenticated(true)
+        // Update URL with code for sharing
+        const newUrl = new URL(window.location.href)
+        newUrl.searchParams.set('code', accessCodeInput)
+        window.history.replaceState({}, '', newUrl.toString())
+      } else {
+        setAuthError('Codice di accesso non valido')
+      }
+    } catch {
+      setAuthError('Si è verificato un errore. Riprova.')
+    } finally {
+      setIsVerifying(false)
+    }
+  }
 
   const {
     messages,
@@ -58,9 +134,7 @@ export default function ChatBot() {
   } = useChat({
     id,
     streamProtocol: 'data',
-    body: {
-      code,
-    },
+    headers: sessionId ? { 'X-Session-ID': sessionId } : {},
   })
 
   const isAtBottomRef = useRef(true)
@@ -149,6 +223,60 @@ export default function ChatBot() {
   const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     setShowSplashScreen(false)
     handleSubmit(e)
+  }
+
+  if (isVerifying) {
+    return (
+      <main className="flex min-h-dvh items-center justify-center bg-white">
+        <div className="animate-pulse flex flex-col items-center gap-4">
+          <div className="h-12 w-12 rounded-full bg-slate-200"></div>
+          <div className="h-4 w-32 rounded bg-slate-200"></div>
+        </div>
+      </main>
+    )
+  }
+
+  if (!isAuthenticated) {
+    return (
+      <main className="flex min-h-dvh items-center justify-center bg-slate-50 px-4">
+        <div className="w-full max-w-md space-y-8 rounded-2xl bg-white p-8 shadow-lg">
+          <div className="text-center">
+            <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-[#006d77]/10">
+              <Lock className="h-6 w-6 text-[#006d77]" />
+            </div>
+            <h2 className="text-2xl font-bold text-slate-900">
+              Accesso Richiesto
+            </h2>
+            <p className="mt-2 text-sm text-slate-600">
+              Inserisci il codice di accesso per utilizzare l&apos;assistente.
+            </p>
+          </div>
+
+          <form onSubmit={handleManualLogin} className="mt-8 space-y-6">
+            <div>
+              <Input
+                type="password"
+                required
+                placeholder="Codice di accesso"
+                value={accessCodeInput}
+                onChange={e => setAccessCodeInput(e.target.value)}
+                className="block w-full rounded-lg border-slate-300 px-4 py-3 focus:border-[#006d77] focus:ring-[#006d77]"
+              />
+              {authError && (
+                <p className="mt-2 text-sm text-red-600">{authError}</p>
+              )}
+            </div>
+
+            <Button
+              type="submit"
+              className="w-full rounded-lg bg-[#006d77] py-3 font-semibold text-white hover:bg-[#005660]"
+            >
+              Accedi
+            </Button>
+          </form>
+        </div>
+      </main>
+    )
   }
 
   return (
