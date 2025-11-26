@@ -239,7 +239,7 @@ export default function ChatBot() {
   if (!isAuthenticated) {
     return (
       <main className="flex min-h-dvh items-center justify-center bg-slate-50 px-4">
-        <div className="w-full max-w-md space-y-8 rounded-2xl bg-white p-8 shadow-lg">
+        <div className="w-full max-w-md space-y-8 rounded-2xl bg-white p-6 md:p-8 shadow-lg">
           <div className="text-center">
             <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-[#006d77]/10">
               <Lock className="h-6 w-6 text-[#006d77]" />
@@ -293,12 +293,12 @@ export default function ChatBot() {
 
         <div className="flex-1 overflow-hidden">
           {showSplashScreen ? (
-            <div className="flex h-full flex-col items-center justify-center gap-8 px-8 text-center">
+            <div className="flex h-full flex-col items-center justify-center gap-6 md:gap-8 px-4 md:px-8 text-center">
               <div className="space-y-3 flex flex-col items-center">
-                <h1 className="text-3xl font-bold text-slate-900">
+                <h1 className="text-2xl md:text-3xl font-bold text-slate-900">
                   Ciao sono l&apos;AI Concierge
                 </h1>
-                <p className="text-base text-slate-600 max-w-[300px]">
+                <p className="text-sm md:text-base text-slate-600 max-w-[300px]">
                   chiedimi quello che vuoi sull&apos;evento o clicca uno dei box
                   sotto
                 </p>
@@ -308,10 +308,12 @@ export default function ChatBot() {
                   <Button
                     key={index}
                     onClick={() => handleQuickQuestion(question)}
-                    className="w-full rounded-lg bg-[#006d77] px-5 py-6 text-center text-white transition hover:bg-[#005660] shadow-md"
+                    className="w-full rounded-lg bg-[#006d77] px-4 py-4 md:px-5 md:py-6 text-center text-white transition hover:bg-[#005660] shadow-md"
                     disabled={isLoading}
                   >
-                    <span className="text-lg font-medium">{question.text}</span>
+                    <span className="text-base md:text-lg font-medium">
+                      {question.text}
+                    </span>
                   </Button>
                 ))}
               </div>
@@ -323,7 +325,7 @@ export default function ChatBot() {
             </div>
           ) : (
             <div className="flex flex-col h-full min-h-0">
-              <div className="flex items-center justify-start px-6 py-4">
+              <div className="flex items-center justify-start px-4 py-3 md:px-6 md:py-4">
                 <Button
                   onClick={resetChat}
                   variant="ghost"
@@ -334,7 +336,10 @@ export default function ChatBot() {
                   <ArrowLeft size={20} />
                 </Button>
               </div>
-              <ScrollArea className="flex-1 px-6 pb-4" ref={containerRef}>
+              <ScrollArea
+                className="flex-1 px-4 md:px-6 pb-4"
+                ref={containerRef}
+              >
                 <div className="space-y-6 pb-6">
                   {messages.map(message => (
                     <div
@@ -346,7 +351,7 @@ export default function ChatBot() {
                       }`}
                     >
                       <div
-                        className={`max-w-[85%] rounded-2xl px-5 py-4 text-base leading-relaxed shadow-sm ${
+                        className={`max-w-[85%] rounded-2xl px-5 py-4 text-xs! md:text-base! leading-relaxed shadow-sm ${
                           message.role === 'user'
                             ? 'bg-[#006d77] text-white'
                             : 'bg-white border border-slate-200 text-slate-800'
@@ -421,7 +426,7 @@ export default function ChatBot() {
           )}
         </div>
 
-        <div className="border-t border-slate-100 bg-white px-6 pb-6 pt-4">
+        <div className="border-t border-slate-100 bg-white px-4 pb-4 pt-3 md:px-6 md:pb-6 md:pt-4">
           <form onSubmit={handleFormSubmit} className="flex items-end">
             <div className="relative flex-1">
               <Textarea
@@ -429,7 +434,7 @@ export default function ChatBot() {
                 value={input}
                 onChange={handleInputChangeWithResize}
                 placeholder="Scrivi un messaggio..."
-                className="w-full min-h-14 max-h-32 resize-none rounded-2xl border border-slate-200 bg-white px-6 pr-14 pt-4 pb-4 text-base text-slate-900 placeholder:text-slate-400 focus-visible:border-[#006d77] focus-visible:ring-1 focus-visible:ring-[#006d77]"
+                className="w-full min-h-14 max-h-32 resize-none rounded-2xl border border-slate-200 bg-white px-4 md:px-6 pr-14 pt-4 pb-4 text-base text-slate-900 placeholder:text-slate-400 focus-visible:border-[#006d77] focus-visible:ring-1 focus-visible:ring-[#006d77]"
                 rows={1}
                 onKeyDown={e => {
                   if (e.key === 'Enter' && !e.shiftKey) {
@@ -461,7 +466,7 @@ export default function ChatBot() {
             <img
               src="/logo-full.png"
               alt="Decentral - Impact by Design"
-              className="h-16 object-contain"
+              className="h-12 md:h-16 object-contain"
             />
           </div>
         </div>
