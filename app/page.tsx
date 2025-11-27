@@ -39,7 +39,6 @@ export default function ChatBot() {
     () => [
       { text: 'Agenda', message: "Qual è il programma dell'evento?" },
       { text: 'Logistica', message: "Dove si svolgerà l'evento?" },
-      { text: 'Contatti', message: 'Chi posso contattare per informazioni?' },
     ],
     []
   )
