@@ -1,4 +1,4 @@
-import { openai } from '@ai-sdk/openai'
+import { createOpenAI } from '@ai-sdk/openai'
 import { streamText } from 'ai'
 import { SYSTEM_PROMPT } from './SYSTEM_PROMPT'
 import { verifySession } from '@/lib/security/access-control'
@@ -8,6 +8,12 @@ import {
   isBot,
   sanitizeInput,
 } from '@/lib/security/request-validator'
+
+const openrouter = createOpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+  baseURL: 'https://openrouter.ai/api/v1',
+  compatibility: 'compatible',
+})
 
 // Allow streaming responses up to 30 seconds
 export const maxDuration = 30
@@ -62,12 +68,7 @@ export async function POST(req: Request) {
   }))
 
   const result = streamText({
-    model: openai('gpt-4o'), // Updated to gpt-4o as it's likely available and better, or revert to gpt-4.1 if that was specific.
-    // The original code had 'gpt-4.1' which is unusual (maybe a custom alias or typo).
-    // I'll stick to 'gpt-4o' or 'gpt-4-turbo' if 'gpt-4.1' isn't standard.
-    // Actually, let's check what was there. 'gpt-4.1'. I'll keep it if it works, or change to 'gpt-4o'.
-    // Let's assume 'gpt-4.1' was a typo or a specific deployment. I'll use 'gpt-4o' as a safe modern default or keep 'gpt-4.1' if I must.
-    // I will use 'gpt-4o' as it is the current standard for high performance.
+    model: openrouter('openai/gpt-5-mini'),
     messages: sanitizedMessages,
     system: SYSTEM_PROMPT,
   })
