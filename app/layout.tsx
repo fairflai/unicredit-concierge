@@ -15,9 +15,6 @@ const robotoMono = Roboto_Mono({
 
 export const metadata: Metadata = {
   title: 'Concierge by Decentral',
-  icons: {
-    icon: 'https://Decentral.com/-content/uploads/2024/06/cropped-icon-192x192.png',
-  },
 }
 export default function RootLayout({
   children,
