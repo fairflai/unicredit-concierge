@@ -14,7 +14,7 @@ const robotoMono = Roboto_Mono({
 })
 
 export const metadata: Metadata = {
-  title: 'Concierge by Decentral',
+  title: 'Shape for Growth - Concierge by Decentral',
 }
 export default function RootLayout({
   children,
