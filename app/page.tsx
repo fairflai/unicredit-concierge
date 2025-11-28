@@ -318,11 +318,6 @@ export default function ChatBot() {
                   ))}
                 </div>
               </div>
-
-              <p className="text-xs text-slate-400 mt-8 md:mt-auto md:pb-6">
-                Sono un sistema di Intelligenza artificiale, posso commettere
-                errori
-              </p>
             </div>
           ) : (
             <div className="flex flex-col h-full min-h-0">
@@ -428,6 +423,9 @@ export default function ChatBot() {
         </div>
 
         <div className="border-t border-slate-100 bg-white px-4 pb-4 pt-3 md:px-6 md:pb-6 md:pt-4">
+          <p className="text-xs text-slate-400 text-center mb-2 md:mb-3">
+            Sono un sistema di Intelligenza artificiale, posso commettere errori
+          </p>
           <form onSubmit={handleFormSubmit} className="flex items-end">
             <div className="relative flex-1">
               <Textarea
