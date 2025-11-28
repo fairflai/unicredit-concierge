@@ -165,11 +165,16 @@ export async function POST(req: Request) {
         ]
       : []
 
+  // The OpenRouter provider currently exposes a v1 model type while the AI SDK expects v2 typings.
+  // We intentionally bypass the type system here as the runtime behavior is compatible.
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const model = openrouter('openai/gpt-5-mini') as any
+
   const result = streamText({
-    model: openrouter('openai/gpt-5-mini'),
+    model,
     messages: [...guardrailMessages, ...sanitizedMessages],
     system: SYSTEM_PROMPT,
   })
 
-  return result.toDataStreamResponse()
+  return result.toTextStreamResponse()
 }

@@ -132,7 +132,7 @@ export default function ChatBot() {
     setMessages,
   } = useChat({
     id,
-    streamProtocol: 'data',
+    streamProtocol: 'text',
     headers: sessionId ? { 'X-Session-ID': sessionId } : {},
   })
 
