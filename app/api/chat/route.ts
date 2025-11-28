@@ -9,6 +9,88 @@ import {
   sanitizeInput,
 } from '@/lib/security/request-validator'
 
+const EVENT_KEYWORDS = [
+  'shape for growth',
+  'evento',
+  'agenda',
+  'programma',
+  'workshop',
+  'sessione',
+  'giornata',
+  'relatori',
+  'speaker',
+  'ospiti',
+  'logistica',
+  'location',
+  'torino',
+  'via xx settembre',
+  'sala',
+  'badge',
+  'check-in',
+  'ingresso',
+  'accesso',
+  'registrazione',
+  'wifi',
+  'rete',
+  'pranzo',
+  'cena',
+  'buffet',
+  'catering',
+  'coffee break',
+  'pausa',
+  'intolleranz',
+  'allerg',
+  'parchegg',
+  'ztl',
+  'metro',
+  'treno',
+  'taxi',
+  'navetta',
+  'hotel',
+  'pernott',
+  'materiali',
+  'slide',
+  'feedback',
+  'emergenza',
+  'staff',
+  'contatto',
+  'telefono',
+  'mail',
+  'dress code',
+  'abbigliamento',
+  'orario',
+  'inizio',
+  'closing',
+]
+
+const BENIGN_FOLLOW_UPS = [
+  'ciao',
+  'grazie',
+  'grazie mille',
+  'ok',
+  'va bene',
+  'perfetto',
+  'thank you',
+  'thanks',
+]
+
+const BLOCKED_KEYWORDS = ['bestemm', 'blasf', 'insulta', 'insulto', 'offendi']
+
+function isEventRelated(text: string): boolean {
+  const normalized = text.toLowerCase()
+  return EVENT_KEYWORDS.some(keyword => normalized.includes(keyword))
+}
+
+function isBenignFollowUp(text: string): boolean {
+  const normalized = text.trim().toLowerCase().replace(/[.!?]+$/g, '')
+  return BENIGN_FOLLOW_UPS.includes(normalized)
+}
+
+function hasBlockedContent(text: string): boolean {
+  const normalized = text.toLowerCase()
+  return BLOCKED_KEYWORDS.some(keyword => normalized.includes(keyword))
+}
+
 const openrouter = createOpenAI({
   apiKey: process.env.OPENAI_API_KEY,
   baseURL: 'https://openrouter.ai/api/v1',
@@ -67,9 +149,25 @@ export async function POST(req: Request) {
     content: sanitizeInput(msg.content),
   }))
 
+  const lastUserMessage =
+    [...sanitizedMessages].reverse().find(msg => msg.role === 'user')
+      ?.content || ''
+
+  const guardrailMessages =
+    hasBlockedContent(lastUserMessage) ||
+    (!isEventRelated(lastUserMessage) && !isBenignFollowUp(lastUserMessage))
+      ? [
+          {
+            role: 'system' as const,
+            content:
+              'Se la richiesta non riguarda l\'evento Shape for Growth o contiene contenuti offensivi, rispondi solo con: "Posso aiutarti con informazioni sull\'evento Shape for Growth." senza aggiungere altro.',
+          },
+        ]
+      : []
+
   const result = streamText({
     model: openrouter('openai/gpt-5-mini'),
-    messages: sanitizedMessages,
+    messages: [...guardrailMessages, ...sanitizedMessages],
     system: SYSTEM_PROMPT,
   })
 

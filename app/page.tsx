@@ -292,32 +292,34 @@ export default function ChatBot() {
 
         <div className="flex-1 overflow-hidden">
           {showSplashScreen ? (
-            <div className="flex h-full flex-col items-center justify-center gap-6 md:gap-8 px-4 md:px-8 text-center">
-              <div className="space-y-3 flex flex-col items-center">
-                <h1 className="text-2xl md:text-3xl font-bold text-slate-900">
-                  Ciao sono l&apos;AI Concierge
-                </h1>
-                <p className="text-sm md:text-base text-slate-600 max-w-[300px]">
-                  chiedimi quello che vuoi sull&apos;evento o clicca uno dei box
-                  sotto
-                </p>
-              </div>
-              <div className="flex flex-col w-full max-w-xs gap-3">
-                {quickQuestions.map((question, index) => (
-                  <Button
-                    key={index}
-                    onClick={() => handleQuickQuestion(question)}
-                    className="w-full rounded-lg bg-[#006d77] px-4 py-4 md:px-5 md:py-6 text-center text-white transition hover:bg-[#005660] shadow-md"
-                    disabled={isLoading}
-                  >
-                    <span className="text-base md:text-lg font-medium">
-                      {question.text}
-                    </span>
-                  </Button>
-                ))}
+            <div className="flex h-full w-full flex-col items-center px-4 md:px-8 text-center">
+              <div className="flex flex-col items-center justify-center gap-6 md:gap-8 flex-1">
+                <div className="space-y-3 flex flex-col items-center">
+                  <h1 className="text-2xl md:text-3xl font-bold text-slate-900">
+                    Ciao sono l&apos;AI Concierge
+                  </h1>
+                  <p className="text-sm md:text-base text-slate-600 max-w-[300px]">
+                    chiedimi quello che vuoi sull&apos;evento o clicca uno dei box
+                    sotto
+                  </p>
+                </div>
+                <div className="flex flex-col w-full max-w-xs gap-3">
+                  {quickQuestions.map((question, index) => (
+                    <Button
+                      key={index}
+                      onClick={() => handleQuickQuestion(question)}
+                      className="w-full rounded-lg bg-[#006d77] px-4 py-4 md:px-5 md:py-6 text-center text-white transition hover:bg-[#005660] shadow-md"
+                      disabled={isLoading}
+                    >
+                      <span className="text-base md:text-lg font-medium">
+                        {question.text}
+                      </span>
+                    </Button>
+                  ))}
+                </div>
               </div>
 
-              <p className="text-xs text-slate-400 mt-8">
+              <p className="text-xs text-slate-400 mt-8 md:mt-auto md:pb-6">
                 Sono un sistema di Intelligenza artificiale, posso commettere
                 errori
               </p>
