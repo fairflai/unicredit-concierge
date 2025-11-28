@@ -91,10 +91,9 @@ function hasBlockedContent(text: string): boolean {
   return BLOCKED_KEYWORDS.some(keyword => normalized.includes(keyword))
 }
 
-const openrouter = createOpenAI({
+const openai = createOpenAI({
   apiKey: process.env.OPENAI_API_KEY,
   baseURL: 'https://openrouter.ai/api/v1',
-  compatibility: 'compatible',
 })
 
 // Allow streaming responses up to 30 seconds
@@ -165,13 +164,8 @@ export async function POST(req: Request) {
         ]
       : []
 
-  // The OpenRouter provider currently exposes a v1 model type while the AI SDK expects v2 typings.
-  // We intentionally bypass the type system here as the runtime behavior is compatible.
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const model = openrouter('openai/gpt-5-mini') as any
-
   const result = streamText({
-    model,
+    model: openai('gpt-5-mini'),
     messages: [...guardrailMessages, ...sanitizedMessages],
     system: SYSTEM_PROMPT,
   })
