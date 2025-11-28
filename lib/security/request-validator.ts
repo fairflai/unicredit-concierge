@@ -1,13 +1,23 @@
 import { z } from 'zod'
 
-// Schema for chat requests
+// Schema for chat requests - supports both string and multimodal array formats
 const chatRequestSchema = z.object({
   messages: z.array(
     z.object({
       role: z.enum(['user', 'assistant', 'system']),
-      content: z.string().min(1).max(3500),
+      content: z.union([
+        z.string().min(1).max(3500),
+        z
+          .array(
+            z.object({
+              type: z.string(),
+              text: z.string().optional(),
+            })
+          )
+          .min(1),
+      ]),
     })
-  )
+  ),
 })
 
 export type ValidationResult<T> =

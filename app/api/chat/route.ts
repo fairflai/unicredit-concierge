@@ -1,4 +1,4 @@
-import { createOpenAI } from '@ai-sdk/openai'
+import { createOpenRouter } from '@openrouter/ai-sdk-provider';
 import { streamText } from 'ai'
 import { SYSTEM_PROMPT } from './SYSTEM_PROMPT'
 import { verifySession } from '@/lib/security/access-control'
@@ -82,7 +82,10 @@ function isEventRelated(text: string): boolean {
 }
 
 function isBenignFollowUp(text: string): boolean {
-  const normalized = text.trim().toLowerCase().replace(/[.!?]+$/g, '')
+  const normalized = text
+    .trim()
+    .toLowerCase()
+    .replace(/[.!?]+$/g, '')
   return BENIGN_FOLLOW_UPS.includes(normalized)
 }
 
@@ -91,7 +94,7 @@ function hasBlockedContent(text: string): boolean {
   return BLOCKED_KEYWORDS.some(keyword => normalized.includes(keyword))
 }
 
-const openai = createOpenAI({
+const openai = createOpenRouter({
   apiKey: process.env.OPENAI_API_KEY,
   baseURL: 'https://openrouter.ai/api/v1',
 })
@@ -142,11 +145,26 @@ export async function POST(req: Request) {
 
   const { messages } = validation.data
 
-  // 5. Sanitization
-  const sanitizedMessages = messages.map(msg => ({
-    ...msg,
-    content: sanitizeInput(msg.content),
-  }))
+  // 5. Sanitization and normalization
+  const sanitizedMessages = messages.map(msg => {
+    let textContent: string
+
+    // Handle both string and array content formats
+    if (typeof msg.content === 'string') {
+      textContent = msg.content
+    } else {
+      // Extract text from multimodal content array
+      textContent = msg.content
+        .map(part => part.text || '')
+        .filter(text => text.length > 0)
+        .join('\n')
+    }
+
+    return {
+      role: msg.role,
+      content: sanitizeInput(textContent),
+    }
+  })
 
   const lastUserMessage =
     [...sanitizedMessages].reverse().find(msg => msg.role === 'user')
@@ -159,7 +177,7 @@ export async function POST(req: Request) {
           {
             role: 'system' as const,
             content:
-              'Se la richiesta non riguarda l\'evento Shape for Growth o contiene contenuti offensivi, rispondi solo con: "Posso aiutarti con informazioni sull\'evento Shape for Growth." senza aggiungere altro.',
+              'Se la richiesta non riguarda l\'evento Shape for Growth o contiene contenuti offensivi, rispondi solo con: "Posso aiutarti solo con informazioni sull\'evento Shape for Growth." senza aggiungere altro.',
           },
         ]
       : []
