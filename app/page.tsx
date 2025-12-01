@@ -299,8 +299,8 @@ export default function ChatBot() {
                     Ciao sono l&apos;AI Concierge
                   </h1>
                   <p className="text-sm md:text-base text-slate-600 max-w-[300px]">
-                    chiedimi quello che vuoi sull&apos;evento o clicca uno dei box
-                    sotto
+                    chiedimi quello che vuoi sull&apos;evento Shape for Growth o
+                    clicca uno dei box sotto
                   </p>
                 </div>
                 <div className="flex flex-col w-full max-w-xs gap-3">
