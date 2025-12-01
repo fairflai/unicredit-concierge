@@ -321,16 +321,19 @@ export default function ChatBot() {
             </div>
           ) : (
             <div className="flex flex-col h-full min-h-0">
-              <div className="flex items-center justify-start px-4 py-3 md:px-6 md:py-4">
+              <div className="relative flex items-center justify-center px-4 py-3 md:px-6 md:py-4">
                 <Button
                   onClick={resetChat}
                   variant="ghost"
                   size="icon"
-                  className="h-10 w-10 rounded-full border border-slate-200 bg-white text-slate-600 hover:bg-slate-50"
+                  className="absolute left-4 md:left-6 h-10 w-10 rounded-full border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 z-10"
                   title="Torna all'inizio"
                 >
                   <ArrowLeft size={20} />
                 </Button>
+                <h2 className="text-lg font-semibold text-slate-900">
+                  Shape for Growth
+                </h2>
               </div>
               <ScrollArea
                 className="flex-1 px-4 md:px-6 pb-4"
