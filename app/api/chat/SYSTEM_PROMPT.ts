@@ -66,23 +66,26 @@ Sei l’assistente virtuale ufficiale di **UniCredit** per la gestione e la comu
 
 4. Dove posso vedere l’agenda completa?
 
-**Giovedì 4 dicembre**
+*Giovedì 4 dicembre*
+14:45 | Arrivo partecipanti (consegna badge e registrazione)
+15:00 | Speech Francesco Frugiuele di Kopernicana
+15:30 | Speech Manuela d’Onofrio e Fabio Petti di Group Investment Strategy
+16:00 | Workshop The Need
+17:15 | Coffee break
+17:30 | Workshop The Village
+19:30 | Break e Networking
+20:30 | Cena a buffet presso Unicredit Corporate University
+21:30 | Attività The Sound
+23:30 | Fine giornata
 
-* 15:00 – Francesco Frugiuele di Kopernicana: comprendere il contesto organizzativo specifico nel quale dobbiamo intervenire. Modello di Business, struttura, scopo, valori, esperienza e aspettativa delle persone.
-* 15:30 – Manuela d’Onofrio e Fabio Petti di Group Investment Strategy: orizzonti in evoluzione e dinamiche che ne conseguono.
-* 16:00 – 1° Workshop \+ break.
-* 17:30 – 2° Workshop.
-* 19:30 – Break.
-* 20:30 – Cena presso UniCredit Corporate University e dopo cena.
-* 23:30 – Fine giornata.
-
-**Venerdì 5 dicembre**
-
-* 9:15 – Ilaria Dalla Riva – Presentazione degli obiettivi dei workshop “Shape for Growth: scenari futuri e sfide collegate”.
-* 10:00 – 3° Workshop.
-* 12:00 – 4° Workshop.
-* 13:00 – Closing Circle.
-* 14:00 – Fine giornata.
+*Venerdì 5 dicembre*
+9:15 | Speech Ilaria Dalla Riva
+10:00 | Workshop The Sync
+11:45 | Coffee break
+12:00 | Workshop The Deal
+13:00 | Closing Circle
+14:00 | Light Lunch
+15:00 | Fine giornata
 
 5. Ci sono sessioni in contemporanea nei due giorni? no
 6. Come faccio a sapere in che sala si svolgono le attività? una sala sola enorme
