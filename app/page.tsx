@@ -6,13 +6,21 @@ import { ScrollArea } from '@/components/ui/scroll-area'
 import { Textarea } from '@/components/ui/textarea'
 import { Input } from '@/components/ui/input'
 import { ArrowUp, ArrowLeft, Lock } from 'lucide-react'
-import { useEffect, useRef, useMemo, useState } from 'react'
+import { useCallback, useEffect, useRef, useMemo, useState } from 'react'
 import { useScrollToBottom } from '@/hooks/use-scroll-to-bottom'
 import MarkdownIt from 'markdown-it'
 
 type QuickQuestion = {
   text: string
   message: string
+}
+
+declare global {
+  interface Window {
+    umami?: {
+      track: (eventName: string, data?: Record<string, unknown>) => void
+    }
+  }
 }
 
 export default function ChatBot() {
@@ -40,6 +48,25 @@ export default function ChatBot() {
       { text: 'Agenda', message: "Qual è il programma dell'evento?" },
       { text: 'Logistica', message: "Dove si svolgerà l'evento?" },
     ],
+    []
+  )
+
+  const pendingEventsRef = useRef<
+    Array<{ eventName: string; data?: Record<string, string | number | boolean> }>
+  >([])
+
+  const trackEvent = useCallback(
+    (
+      eventName: string,
+      data?: Record<string, string | number | boolean>
+    ) => {
+      if (typeof window === 'undefined') return
+      if (window.umami?.track) {
+        window.umami.track(eventName, data)
+        return
+      }
+      pendingEventsRef.current.push({ eventName, data })
+    },
     []
   )
 
@@ -94,6 +121,7 @@ export default function ChatBot() {
     e.preventDefault()
     setAuthError(null)
     setIsVerifying(true)
+    trackEvent('cta_access', { source: 'manual_form' })
 
     try {
       const res = await fetch('/api/auth', {
@@ -107,15 +135,18 @@ export default function ChatBot() {
         setSessionId(data.sessionId)
         sessionStorage.setItem('chat_session_id', data.sessionId)
         setIsAuthenticated(true)
+        trackEvent('login_success', { source: 'manual_form' })
         // Update URL with code for sharing
         const newUrl = new URL(window.location.href)
         newUrl.searchParams.set('code', accessCodeInput)
         window.history.replaceState({}, '', newUrl.toString())
       } else {
         setAuthError('Codice di accesso non valido')
+        trackEvent('login_failed', { reason: 'invalid_code' })
       }
     } catch {
       setAuthError('Si è verificato un errore. Riprova.')
+      trackEvent('login_failed', { reason: 'network_error' })
     } finally {
       setIsVerifying(false)
     }
@@ -191,6 +222,7 @@ export default function ChatBot() {
   }
 
   const resetChat = () => {
+    trackEvent('cta_reset_chat')
     setMessages([])
     setShowSplashScreen(true)
     if (textareaRef.current) {
@@ -212,6 +244,10 @@ export default function ChatBot() {
   }, [input])
 
   const handleQuickQuestion = (questionObj: QuickQuestion) => {
+    trackEvent('cta_quick_question', {
+      label: questionObj.text,
+      message: questionObj.message,
+    })
     setShowSplashScreen(false)
     append({
       role: 'user',
@@ -221,6 +257,12 @@ export default function ChatBot() {
 
   const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     setShowSplashScreen(false)
+    if (input.trim()) {
+      trackEvent('cta_send_message', {
+        source: 'form_submit',
+        length: input.trim().length,
+      })
+    }
     handleSubmit(e)
   }
 
@@ -443,6 +485,10 @@ export default function ChatBot() {
                     e.preventDefault()
                     if (input.trim()) {
                       setShowSplashScreen(false)
+                      trackEvent('cta_send_message', {
+                        source: 'enter_key',
+                        length: input.trim().length,
+                      })
                       handleSubmit(
                         e as unknown as React.FormEvent<HTMLFormElement>
                       )

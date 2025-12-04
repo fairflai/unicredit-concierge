@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import Script from 'next/script'
 import { Roboto, Roboto_Mono } from 'next/font/google'
 import './globals.css'
 
@@ -27,6 +28,11 @@ export default function RootLayout({
         className={`${roboto.variable} ${robotoMono.variable} antialiased`}
         suppressHydrationWarning
       >
+        <Script
+          src="https://cloud.umami.is/script.js"
+          data-website-id="1de290ef-d75a-4541-8d71-5b37ad12a139"
+          strategy="afterInteractive"
+        />
         {children}
       </body>
     </html>
