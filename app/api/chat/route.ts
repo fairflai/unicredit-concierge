@@ -183,7 +183,7 @@ export async function POST(req: Request) {
       : []
 
   const result = streamText({
-    model: openai('gpt-5-mini'),
+    model: openai('google/gemini-2.5-flash'),
     messages: [...guardrailMessages, ...sanitizedMessages],
     system: SYSTEM_PROMPT,
   })
