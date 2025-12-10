@@ -76,6 +76,8 @@ const BENIGN_FOLLOW_UPS = [
 
 const BLOCKED_KEYWORDS = ['bestemm', 'blasf', 'insulta', 'insulto', 'offendi']
 
+const EVENT_CLOSED = true
+
 function isEventRelated(text: string): boolean {
   const normalized = text.toLowerCase()
   return EVENT_KEYWORDS.some(keyword => normalized.includes(keyword))
@@ -165,6 +167,23 @@ export async function POST(req: Request) {
       content: sanitizeInput(textContent),
     }
   })
+
+  if (EVENT_CLOSED) {
+    const encoder = new TextEncoder()
+
+    const stream = new ReadableStream<Uint8Array>({
+      start(controller) {
+        controller.enqueue(encoder.encode("L'evento si è concluso"))
+        controller.close()
+      },
+    })
+
+    return new Response(stream, {
+      headers: {
+        'Content-Type': 'text/plain; charset=utf-8',
+      },
+    })
+  }
 
   const lastUserMessage =
     [...sanitizedMessages].reverse().find(msg => msg.role === 'user')
